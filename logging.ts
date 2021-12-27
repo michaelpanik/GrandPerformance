@@ -1,10 +1,11 @@
 import { mem } from "systeminformation";
 import AWSTimestreamLogger from "./src/Logger/AWSTimestreamLogger";
+import ConsoleLogger from "./src/Logger/ConsoleLogger";
+
+require("dotenv").config();
 
 function main() {
-  //   const logger = new LocalLogger({
-  //     logfile: "sensor.log",
-  //   });
+  // const logger = new ConsoleLogger();
   const logger = new AWSTimestreamLogger({
     databaseName: "sensor-data",
     tableName: "test-account-1",
