@@ -1,7 +1,14 @@
+/**
+ * BIG IMPORTANT TODO:
+ *
+ * Need to parse IOs, then parse their Integrations/Sensors and attach instance
+ * of that IO to them. Keep IO injectable, but flow nicely in the config
+ */
+
 import * as fs from "fs";
 import ControllinoMegaIO from "../IO/ControllinoMegaIO";
-import { IIO } from "../IO/IO.d";
-// import FurnaceAirConditioner from "../Integration/FurnaceAirConditioner";
+import IO from "../IO/IO";
+import FurnaceAirConditioner from "../Integration/FurnaceAirConditioner";
 import RuuvitagSensor from "../Sensor/RuuviTagSensor";
 import Sensor from "../Sensor/Sensor";
 import SoilMoistureSensor from "../Sensor/SoilMoistureSensor";
@@ -12,37 +19,18 @@ import {
   ConfigIO,
   ConfigSensor,
 } from "./Config.d";
+import Integration from "../Integration/Integration";
 
-// interface IIntegration {
-//   power: boolean;
-// }
-
-// class AirConditioner implements IIntegration {
-//   private _power: boolean;
-
-//   constructor() {
-//     this._power = false;
-//   }
-
-//   public get power() {
-//     return this._power;
-//   }
-//   public set power(state: boolean) {
-//     this._power = state;
-//   }
-// }
-
-// TODO: parse out the IO, provide to sensors and integrations
-// TODO: return {io, sensors, integrations} from class
 class Config {
-  // private _integrations: AirConditioner[];
+  private _integrations: Integration[];
   private _sensors: Sensor[];
+  private _io: IO[];
 
   constructor(configFilePath: string) {
-    const { sensors, io } = this.parseConfigFile(configFilePath);
+    const { io, integrations, sensors } = this.parseConfigFile(configFilePath);
 
     this._io = io;
-    // this._integrations = integrations;
+    this._integrations = integrations;
     this._sensors = sensors;
   }
 
@@ -51,34 +39,40 @@ class Config {
     const config: ConfigFile = JSON.parse(rawData.toString());
 
     return {
-      // integrations: this.parseIntegrations(config.integrations),
+      integrations: this.parseIntegrations(config.integrations),
       sensors: this.parseSensors(config.sensors),
+      io: this.parseIO(config.io),
     };
   }
 
-  private parseIO(io: ConfigIO) {
-    const IOs = new Map<string, IIO>([
+  private parseIO(ioList: ConfigIO[]): IO[] {
+    const ios = new Map<string, any>([
       ["ControllinoMegaIO", ControllinoMegaIO],
     ]);
-    return;
+    return ioList.map(({ type }) => {
+      if (ios.has(type)) {
+        return new (ios.get(type))();
+      }
+    });
   }
 
-  // private parseIntegrations(integrationList: ConfigIntegration[]) {
-  //   const integrations = new Map<string, any>([
-  //     ["AirConditioner", AirConditioner],
-  //   ]);
+  private parseIntegrations(integrationList: ConfigIntegration[]) {
+    // TODO: this should be a class that implements IIO, not any
+    const integrations = new Map<string, any>([
+      ["FurnaceAirConditioner", FurnaceAirConditioner],
+    ]);
 
-  //   return integrationList.map(({ type }) => {
-  //     if (integrations.has(type)) {
-  //       console.log(integrations.get(type));
-  //       return new (integrations.get(type))();
-  //     }
-  //   });
-  // }
+    return integrationList.map(({ type, id }) => {
+      if (integrations.has(type)) {
+        console.log(integrations.get(type));
+        return new (integrations.get(type))(id, new ControllinoMegaIO()); // TODO: How do we determine which IO to use?? Controllino + Ruuvitag??
+      }
+    });
+  }
 
   private parseSensors(sensorList: ConfigSensor[]) {
-    const sensors = new Map<string, Sensor>([
-      // TODO: this should be a class that implements IIO, not any
+    // TODO: this should be a class that implements IIO, not any
+    const sensors = new Map<string, any>([
       ["Ruuvitag", RuuvitagSensor],
       ["SoilMoisture", SoilMoistureSensor],
     ]);
@@ -91,9 +85,13 @@ class Config {
     });
   }
 
-  // public get integrations() {
-  //   return this._integrations;
-  // }
+  public get io() {
+    return this._io;
+  }
+
+  public get integrations() {
+    return this._integrations;
+  }
 
   public get sensors() {
     return this._sensors;

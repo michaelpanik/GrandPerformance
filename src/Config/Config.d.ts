@@ -27,4 +27,6 @@ export type ConfigSensor = {
 
 export type ConfigFile = {
   io: ConfigIO[];
+  sensors: ConfigSensor[];
+  integrations: ConfigIntegration[];
 };
