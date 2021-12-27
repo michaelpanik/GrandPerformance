@@ -1,0 +1,17 @@
+{
+  "name": "grandperformance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scratchpad.js",
+  "dependencies": {
+    "@aws-sdk/client-timestream-write": "^3.45.0",
+    "@types/node": "^17.0.5",
+    "johnny-five": "^2.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
