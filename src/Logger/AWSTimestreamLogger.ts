@@ -20,8 +20,8 @@ class AWSTimestreamLogger extends Logger {
 
     this._client = new TimestreamWriteClient({
       credentials: {
-        accessKeyId: "AKIA3LDWINYB24POZZF6",
-        secretAccessKey: "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",
+        accessKeyId: process.env.AWSAccessKeyId,
+        secretAccessKey: process.env.AWSSecretKey,
       },
     });
   }
@@ -44,7 +44,8 @@ class AWSTimestreamLogger extends Logger {
       });
       const res = this._client.send(command);
     } catch (error) {
-      throw new Error(error);
+      console.log(error);
+      throw new Error();
     }
   }
 }
