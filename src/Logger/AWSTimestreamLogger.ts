@@ -19,18 +19,20 @@ class AWSTimestreamLogger extends Logger {
     this._tableName = config.tableName;
 
     this._client = new TimestreamWriteClient({
+      region: process.env.AWSRegion || "us-east-1",
       credentials: {
-        accessKeyId: process.env.AWSAccessKeyId,
-        secretAccessKey: process.env.AWSSecretKey,
+        accessKeyId: process.env.AWSAccessKeyId || "",
+        secretAccessKey: process.env.AWSSecretKey || "",
       },
     });
   }
 
-  log(records: LogRecord[]): void {
+  async log(records: LogRecord[]): Promise<void> {
     try {
       const logRecords: _Record[] = records.map((record) => ({
         MeasureName: record.key,
         MeasureValue: record.value,
+        Time: record.timestamp.toString(),
         Dimensions: record.metadata.map((metadata) => ({
           Name: metadata.key,
           Value: metadata.value,
@@ -42,7 +44,7 @@ class AWSTimestreamLogger extends Logger {
         TableName: this._tableName,
         Records: logRecords,
       });
-      const res = this._client.send(command);
+      const res = await this._client.send(command);
     } catch (error) {
       console.log(error);
       throw new Error();
