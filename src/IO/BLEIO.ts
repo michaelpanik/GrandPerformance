@@ -1,13 +1,9 @@
-import IO from "./IO";
+import IO, { IInput } from "./IO";
 import { PinValue } from "./IO.d";
 
-class BLEIO extends IO {
+class BLEIO implements IInput {
   read(pinId: string): number {
     return 0;
-  }
-
-  write(pinId: string, value: PinValue): void {
-    return;
   }
 }
 

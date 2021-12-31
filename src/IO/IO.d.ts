@@ -8,7 +8,8 @@ export type Input = {
 export const enum InputTypes {
   DIGITAL,
   ANALOG,
-  RS485,
+  RS485A,
+  RS485B,
 }
 
 export type Output = {
@@ -22,4 +23,14 @@ export const enum OutputTypes {
   RS485,
   RELAY,
   PWM,
+}
+
+export interface IInput {
+  inputs: Map<string, any>;
+  read(pinId: string): number | Promise<number>;
+}
+
+export interface IOutput {
+  outputs: Map<string, any>;
+  write(pinId: string, value: PinValue): void | Promise<void>;
 }

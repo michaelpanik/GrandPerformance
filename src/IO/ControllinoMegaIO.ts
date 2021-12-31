@@ -1,15 +1,22 @@
-import { Input, InputTypes, Output, OutputTypes } from "./IO.d";
+import {
+  IInput,
+  Input,
+  InputTypes,
+  IOutput,
+  Output,
+  OutputTypes,
+} from "./IO.d";
 import { Pin, Board } from "johnny-five";
 import IO from "./IO";
+import RS485IO from "./RS485";
 
-class ControllinoMegaIO extends IO {
+class ControllinoMegaIO implements IInput, IOutput {
+  private rs485 = new RS485IO("/dev/tty1");
   readonly board;
   inputs: Map<string, Pin> = new Map();
   outputs: Map<string, Pin> = new Map();
-  d;
 
   constructor() {
-    super();
     this.board = new Board({});
     this.board.on("ready", this.handleReadyEvent);
   }
@@ -32,6 +39,8 @@ class ControllinoMegaIO extends IO {
       { pinId: "A13", type: InputTypes.ANALOG },
       { pinId: "A14", type: InputTypes.ANALOG },
       { pinId: "A15", type: InputTypes.ANALOG },
+      { pinId: 14, type: InputTypes.RS485A },
+      { pinId: 15, type: InputTypes.RS485B },
       { pinId: 38, type: InputTypes.DIGITAL },
       { pinId: 39, type: InputTypes.DIGITAL },
       { pinId: 40, type: InputTypes.DIGITAL },
@@ -49,14 +58,6 @@ class ControllinoMegaIO extends IO {
       { pinId: 11, type: OutputTypes.PWM },
       { pinId: 12, type: OutputTypes.PWM },
       { pinId: 13, type: OutputTypes.PWM },
-      { pinId: 42, type: OutputTypes.DIGITAL },
-      { pinId: 43, type: OutputTypes.DIGITAL },
-      { pinId: 44, type: OutputTypes.PWM },
-      { pinId: 45, type: OutputTypes.PWM },
-      { pinId: 46, type: OutputTypes.PWM },
-      { pinId: 47, type: OutputTypes.DIGITAL },
-      { pinId: 48, type: OutputTypes.DIGITAL },
-      { pinId: 49, type: OutputTypes.DIGITAL },
       { pinId: 22, type: OutputTypes.RELAY },
       { pinId: 23, type: OutputTypes.RELAY },
       { pinId: 24, type: OutputTypes.RELAY },
@@ -73,6 +74,14 @@ class ControllinoMegaIO extends IO {
       { pinId: 35, type: OutputTypes.RELAY },
       { pinId: 36, type: OutputTypes.RELAY },
       { pinId: 37, type: OutputTypes.RELAY },
+      { pinId: 42, type: OutputTypes.DIGITAL },
+      { pinId: 43, type: OutputTypes.DIGITAL },
+      { pinId: 44, type: OutputTypes.PWM },
+      { pinId: 45, type: OutputTypes.PWM },
+      { pinId: 46, type: OutputTypes.PWM },
+      { pinId: 47, type: OutputTypes.DIGITAL },
+      { pinId: 48, type: OutputTypes.DIGITAL },
+      { pinId: 49, type: OutputTypes.DIGITAL },
     ]);
   }
 
