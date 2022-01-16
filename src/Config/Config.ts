@@ -9,7 +9,7 @@ import * as fs from "fs";
 import ControllinoMegaIO from "../IO/ControllinoMegaIO";
 import IO from "../IO/IO";
 import FurnaceAirConditioner from "../Integration/FurnaceAirConditioner";
-import RuuvitagSensor from "../Sensor/RuuviTagSensor";
+import RuuvitagSensor from "../Sensor/RuuvitagSensor";
 import Sensor from "../Sensor/Sensor";
 import SoilMoistureSensor from "../Sensor/SoilMoistureSensor";
 

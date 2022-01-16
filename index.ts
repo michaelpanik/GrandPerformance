@@ -14,16 +14,17 @@ async function main() {
   //   databaseName: "sensor-data",
   //   tableName: "test-account-1",
   // });
-  // const logger = new ConsoleLogger();
+  const logger = new ConsoleLogger();
 
-  // const { sensors, integrations, io } = new Config("config.json");
+  const { sensors } = new Config("config.json");
 
-  // config.sensors.forEach((sensor) => {
-  //   setInterval(async () => {
-  //     const status = sensor.getStatus();
-  //     logger.log(status);
-  //   }, 250);
-  // });
+  sensors.forEach((sensor) => {
+    console.log(sensor)
+    // setInterval(async () => {
+    //   const status = sensor.getStatus();
+    //   logger.log([status]);
+    // }, 1000);
+  });
 
   //   let counter = 0;
   //   const pins = [
@@ -56,21 +57,21 @@ async function main() {
   //   ac.power = true;
   // });
 
-  const port = new SerialPort("/dev/cu.usbmodem11101", {
-    dataBits: 8,
-    parity: "none",
-    stopBits: 1,
-    baudRate: 9600,
-  });
-  const parser = new ByteLength({ length: 8 });
-  port.pipe(parser);
+  // const port = new SerialPort("/dev/cu.usbmodem11101", {
+  //   dataBits: 8,
+  //   parity: "none",
+  //   stopBits: 1,
+  //   baudRate: 9600,
+  // });
+  // const parser = new ByteLength({ length: 8 });
+  // port.pipe(parser);
 
-  setInterval(() => {
-    port.write([0x01, 0x04, 0x0000, 0x0003, 0xb00b]);
-  }, 1000);
+  // setInterval(() => {
+  //   port.write([0x01, 0x04, 0x0000, 0x0003, 0xb00b]);
+  // }, 1000);
 
-  parser.on("data", (data: Buffer) => {
-    console.log("Data: ", data.toJSON());
-  });
+  // parser.on("data", (data: Buffer) => {
+  //   console.log("Data: ", data.toJSON());
+  // });
 }
 main();

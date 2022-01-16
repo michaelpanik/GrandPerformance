@@ -17,12 +17,14 @@ export type ConfigIntegration = {
   };
 };
 
+type ConfigSensorPins = {
+  pins: ConfigPin[];
+}
+
 export type ConfigSensor = {
   id: string;
   type: string;
-  options: {
-    pins: ConfigPin[];
-  };
+  options?: ConfigSensorPins
 };
 
 export type ConfigFile = {

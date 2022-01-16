@@ -1,70 +1,38 @@
-const noble = require("@abandonware/noble");
+import { EventEmitter } from "stream";
 
-type Peripheral = {
-  id: string;
-  address: string;
-  addressType: string;
-  connectable: boolean;
-  advertisement: {
-    localName: string;
-    txPowerLevel: number;
-    serviceUuids: string[];
-    serviceSolicitationUuid: string[];
-    manufacturerData: Buffer;
-    serviceData: Array<{
-      uuid: string;
-      data: Buffer;
-    }>;
-  };
-  rssi: string;
-};
+const ruuvi = require('node-ruuvitag');
 
-type Characteristic = {
-  uuid: string;
-  properties: Array<
-    | "broadcast"
-    | "read"
-    | "writeWithoutResponse"
-    | "write"
-    | "notify"
-    | "indicate"
-    | "authenticatedSignedWrites"
-    | "extendedProperties"
-  >;
-};
+type TagData = {
+  "dataFormat": number,
+  "rssi": number,
+  "temperature": number,
+  "humidity": number,
+  "pressure": number,
+  "accelerationX": number,
+  "accelerationY": number,
+  "accelerationZ": number,
+  "battery": number,
+  "txPower": number,
+  "movementCounter": number,
+  "measurementSequenceNumber": number,
+  "mac": string
+}
 
-noble.on("stateChange", (state: string) => {
-  console.log("state changed. " + state);
-  if (state === "poweredOn") {
-    console.log("here");
-    noble.startScanning(["10F5A29BEA9E1A0F702EE17787023CBE"], true);
-  }
+interface RuuviTag extends EventEmitter {
+  id: string,
+  address: string,
+  addressType: string,
+  connectable: boolean
+}
+
+ruuvi.on('found', (tag: RuuviTag) => {
+  console.log('Found RuuviTag, id: ' + tag.id);
+  tag.on('updated', (data: TagData) => {
+    console.log('Got data from RuuviTag ' + tag.id + ':\n' +
+      JSON.stringify(data, null, '\t'));
+  });
 });
 
-noble.on("discover", (peripheral: Peripheral) => {
-  console.log("Peripheral: " + peripheral);
-  //   await noble.stopScanningAsync();
-  //   await peripheral.connectAsync();
-  //   const { characteristics } =
-  //     await peripheral.discoverSomeServicesAndCharacteristicsAsync(
-  //       ["180f"],
-  //       ["2a19"]
-  //     );
-  //   const batteryLevel = (await characteristics[0].readAsync())[0];
-
-  //   console.log(
-  //     `${peripheral.address} (${peripheral.advertisement.localName}): ${batteryLevel}%`
-  //   );
-
-  //   await peripheral.disconnectAsync();
-  //   process.exit(0);
-});
-noble.on("scanStart", () => {
-  console.log("Scan started");
-});
-noble.on("error", () => {
-  console.log("error");
-});
-noble.on("warning", () => {
-  console.log("warning");
+ruuvi.on('warning', (message: any) => {
+  console.error(new Error(JSON.stringify(message)));
 });

@@ -1,22 +1,24 @@
-import Sensor from "./Sensor";
-import BLEIO from "../IO/BLEIO";
-import { RuuvitagSensorConfig } from "./Sensor.d";
+import RuuvitagIO from '../IO/RuuvitagIO';
 
-class RuuvitagSensor extends Sensor {
-  protected _io: BLEIO;
+import Sensor from "./Sensor"
 
-  constructor(config: RuuvitagSensorConfig) {
-    super(config);
-    this._io = config.io;
+class RuuviTagSensor extends Sensor {
+
+
+  constructor(config) {
+    super({ io: config.io })
+
   }
+
+
 
   public getStatus(): string {
-    return "status";
+    return JSON.stringify(this._tagData);
   }
 
-  public read(): number {
-    return 0;
+  public read(tagId: string): TagData {
+    return this._tagData.get(tagId);
   }
 }
 
-export default RuuvitagSensor;
+export default RuuviTagSensor;
