@@ -3,6 +3,8 @@ import { LogRecord } from "./Logger.d";
 import { AWSTimestreamLoggerConfig } from "./AWSTimestreamLogger.d";
 import {
   MeasureValue,
+  MeasureValueType,
+  RejectedRecordsException,
   TimestreamWriteClient,
   WriteRecordsCommand,
   _Record,
@@ -21,8 +23,8 @@ class AWSTimestreamLogger extends Logger {
     this._client = new TimestreamWriteClient({
       region: process.env.AWSRegion || "us-east-1",
       credentials: {
-        accessKeyId: process.env.AWSAccessKeyId || "",
-        secretAccessKey: process.env.AWSSecretKey || "",
+        accessKeyId: process.env.AWSAccessKeyId || "AKIA3LDWINYB3C3X6FWW",
+        secretAccessKey: process.env.AWSSecretKey || "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",
       },
     });
   }
@@ -30,12 +32,13 @@ class AWSTimestreamLogger extends Logger {
   async log(records: LogRecord[]): Promise<void> {
     try {
       const logRecords: _Record[] = records.map((record) => ({
-        MeasureName: record.key,
-        MeasureValue: record.value,
+        MeasureName: record.key.toString(),
+        MeasureValue: record.value.toString(),
+        MeasureValueType: typeof record.value === 'number' ? MeasureValueType.DOUBLE : MeasureValueType.VARCHAR,
         Time: record.timestamp.toString(),
         Dimensions: record.metadata.map((metadata) => ({
-          Name: metadata.key,
-          Value: metadata.value,
+          Name: metadata.key.toString(),
+          Value: metadata.value.toString(),
         })),
       }));
 
@@ -44,10 +47,10 @@ class AWSTimestreamLogger extends Logger {
         TableName: this._tableName,
         Records: logRecords,
       });
-      const res = await this._client.send(command);
-    } catch (error) {
-      console.log(error);
-      throw new Error();
+      await this._client.send(command);
+    } catch (error: any) {
+      console.log(error)
+      throw error;
     }
   }
 }

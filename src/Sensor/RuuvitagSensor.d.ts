@@ -21,5 +21,5 @@ export type TagData = {
     movementCounter: number,
     measurementSequenceNumber: number,
     mac: string
+    vpd?: number
 }
-

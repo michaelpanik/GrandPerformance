@@ -1,5 +1,5 @@
 export type SensorConfig<T> = {
-  io: any;
+  id: string
 };
 
 export type SoilMoistureSensorConfig = SensorConfig<{

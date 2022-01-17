@@ -8,22 +8,25 @@ import ControllinoMegaIO from "./src/IO/ControllinoMegaIO";
 import RS485 from "./src/IO/RS485";
 import AWSTimestreamLogger from "./src/Logger/AWSTimestreamLogger";
 import ConsoleLogger from "./src/Logger/ConsoleLogger";
+import { LogRecord } from "./src/Logger/Logger.d";
 
 async function main() {
-  // const logger = new AWSTimestreamLogger({
-  //   databaseName: "sensor-data",
-  //   tableName: "test-account-1",
-  // });
-  const logger = new ConsoleLogger();
+  const logger = new AWSTimestreamLogger({
+    databaseName: "sensor-data",
+    tableName: "test-account-1",
+  });
+  // const logger = new ConsoleLogger();
 
   const { sensors } = new Config("config.json");
 
   sensors.forEach((sensor) => {
-    console.log(sensor)
-    // setInterval(async () => {
-    //   const status = sensor.getStatus();
-    //   logger.log([status]);
-    // }, 1000);
+    setInterval(async () => {
+      const status: LogRecord[] | null = sensor.getStatus();
+
+      if (!status) return
+
+      logger.log(status);
+    }, 1000);
   });
 
   //   let counter = 0;
@@ -57,21 +60,17 @@ async function main() {
   //   ac.power = true;
   // });
 
-  // const port = new SerialPort("/dev/cu.usbmodem11101", {
+  // const port = new SerialPort("/dev/cu.usbmodem14101", {
   //   dataBits: 8,
   //   parity: "none",
   //   stopBits: 1,
   //   baudRate: 9600,
   // });
-  // const parser = new ByteLength({ length: 8 });
-  // port.pipe(parser);
 
-  // setInterval(() => {
-  //   port.write([0x01, 0x04, 0x0000, 0x0003, 0xb00b]);
-  // }, 1000);
+  // port.write([0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x65, 0xCB])
 
-  // parser.on("data", (data: Buffer) => {
-  //   console.log("Data: ", data.toJSON());
-  // });
+  // port.on('data', console.log)
+
+
 }
 main();
