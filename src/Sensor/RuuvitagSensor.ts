@@ -18,6 +18,7 @@ class RuuviTagSensor {
     this.id = config.id
     ruuvi.on('found', (tag: RuuviTag) => {
       if (tag.id === config.id) {
+        console.log('Found a new RuuviTag! ', tag.id)
         this._tag = tag
         tag.on('updated', data => {
           data.vpd = calculateVPD(data.humidity, data.temperature)
