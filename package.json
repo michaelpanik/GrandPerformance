@@ -1,8 +1,8 @@
 {
-  "name": "grandperformance",
+  "name": "@incresco/incresco",
   "version": "1.0.0",
   "description": "",
-  "main": "scratchpad.js",
+  "main": "index.ts",
   "dependencies": {
     "@aws-sdk/client-timestream-write": "^3.45.0",
     "@serialport/parser-inter-byte-timeout": "^9.2.4",

@@ -14,7 +14,6 @@ class RuuviTagSensor {
   public isReady: boolean = false
 
   constructor(config: SensorConfig<{}>) {
-    // super({ id: config.id })
     this.id = config.id
     ruuvi.on('found', (tag: RuuviTag) => {
       if (tag.id === config.id) {
