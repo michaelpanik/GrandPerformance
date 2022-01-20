@@ -17,21 +17,27 @@ import {
   ConfigFile,
   ConfigIntegration,
   ConfigIO,
+  ConfigLogger,
   ConfigSensor,
 } from "./Config.d";
 import Integration from "../Integration/Integration";
+import Logger from "../Logger/Logger";
+import AWSTimestreamLogger from "../Logger/AWSTimestreamLogger";
+import ConsoleLogger from "../Logger/ConsoleLogger";
 
 class Config {
-  // private _integrations: Integration[];
+  private _loggers: Logger[];
   private _sensors: Sensor[];
+  // private _integrations: Integration[];
   // private _io: any[];
 
   constructor(configFilePath: string) {
-    const { sensors } = this.parseConfigFile(configFilePath);
+    const { loggers, sensors } = this.parseConfigFile(configFilePath);
 
+    this._loggers = loggers;
+    this._sensors = sensors;
     // this._io = io;
     // this._integrations = integrations;
-    this._sensors = sensors;
   }
 
   private parseConfigFile(configFilePath: string) {
@@ -39,8 +45,9 @@ class Config {
     const config: ConfigFile = JSON.parse(rawData.toString());
 
     return {
-      // integrations: this.parseIntegrations(config.integrations),
+      loggers: this.parseLoggers(config.loggers),
       sensors: this.parseSensors(config.sensors),
+      // integrations: this.parseIntegrations(config.integrations),
       // io: this.parseIO(config.io),
     };
   }
@@ -70,16 +77,30 @@ class Config {
   //   });
   // }
 
+  private parseLoggers(loggerList: ConfigLogger[]) {
+    const loggers = new Map<string, any>([
+      ["timestream", AWSTimestreamLogger],
+      ["console", ConsoleLogger],
+    ]);
+
+    return loggerList.map(({ type, options = {} }) => {
+      if (loggers.has(type)) {
+        return new (loggers.get(type))(options);
+      }
+    });
+  }
+
   private parseSensors(sensorList: ConfigSensor[]) {
     // TODO: this should be a class that implements IIO, not any
     const sensors = new Map<string, any>([
-      ["Ruuvitag", RuuvitagSensor],
+      ["ruuvitag", RuuvitagSensor],
       // ["SoilMoisture", SoilMoistureSensor],
     ]);
 
-    return sensorList.map(({ type, id }) => {
+    // TODO: this map function is repeated, very basic.
+    return sensorList.map(({ type, options }) => {
       if (sensors.has(type)) {
-        return new (sensors.get(type))({ id: id }); // TODO: How do we determine which IO to use?? Controllino + Ruuvitag??
+        return new (sensors.get(type))(options);
       }
     });
   }
@@ -91,6 +112,10 @@ class Config {
   // public get integrations() {
   //   return this._integrations;
   // }
+
+  public get loggers() {
+    return this._loggers;
+  }
 
   public get sensors() {
     return this._sensors;

@@ -10,14 +10,10 @@ import AWSTimestreamLogger from "./src/Logger/AWSTimestreamLogger";
 import ConsoleLogger from "./src/Logger/ConsoleLogger";
 import { LogRecord } from "./src/Logger/Logger.d";
 
-async function main() {
-  const logger = new AWSTimestreamLogger({
-    databaseName: "sensor-data",
-    tableName: "test-account-1",
-  });
-  // const logger = new ConsoleLogger();
+require('dotenv').config();
 
-  const { sensors } = new Config("config.json");
+async function main() {
+  const { loggers, sensors } = new Config("config.json");
 
   sensors.forEach((sensor) => {
     setInterval(async () => {
@@ -25,7 +21,9 @@ async function main() {
 
       if (!status) return
 
-      logger.log(status);
+      loggers.forEach(logger => {
+        logger.log(status);
+      })
     }, 1000);
   });
 

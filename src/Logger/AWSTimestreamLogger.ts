@@ -21,10 +21,10 @@ class AWSTimestreamLogger extends Logger {
     this._tableName = config.tableName;
 
     this._client = new TimestreamWriteClient({
-      region: process.env.AWSRegion,
+      region: process.env.AWSRegion || "",
       credentials: {
-        accessKeyId: process.env.AWSAccessKeyId,
-        secretAccessKey: process.env.AWSSecretKey,
+        accessKeyId: process.env.AWSAccessKeyId || "",
+        secretAccessKey: process.env.AWSSecretKey || "",
       },
     });
   }

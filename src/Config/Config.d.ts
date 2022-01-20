@@ -1,3 +1,10 @@
+import { AWSTimestreamLoggerConfig } from "../Logger/AWSTimestreamLogger.d";
+
+export type ConfigLogger = {
+  type: string;
+  options?: AWSTimestreamLoggerConfig;
+};
+
 export type ConfigIO = {
   type: string;
   sensors?: ConfigSensor[];
@@ -28,7 +35,8 @@ export type ConfigSensor = {
 };
 
 export type ConfigFile = {
-  io: ConfigIO[];
+  loggers: ConfigLogger[],
   sensors: ConfigSensor[];
+  io: ConfigIO[];
   integrations: ConfigIntegration[];
 };
