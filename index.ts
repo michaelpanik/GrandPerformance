@@ -13,7 +13,7 @@ import { LogRecord } from "./src/Logger/Logger.d";
 require('dotenv').config();
 
 async function main() {
-  const { loggers, sensors } = new Config("config.json");
+  const { loggers, sensors } = new Config("./config.json");
 
   sensors.forEach((sensor) => {
     setInterval(async () => {
